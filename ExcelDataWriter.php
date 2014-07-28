@@ -88,8 +88,8 @@ class ExcelDataWriter extends \yii\base\Object
                     $column = ArrayHelper::merge($column, call_user_func($column['cellOptions'], $row, $key, $i, $this->j));
                 }
                 $value = null;
-                if (isset($column['value']) && $column['value'] instanceof \Closure) {
-                    $value = call_user_func($column['value'], $row, $key);
+                if (isset($column['value'])) {
+                    $value = ($column['value'] instanceof \Closure) ? call_user_func($column['value'], $row, $key) : $column['value'];
                 } elseif (isset($column['attribute']) && isset($row[$column['attribute']])) {
                     $value = $row[$column['attribute']];
                 }
@@ -128,8 +128,12 @@ class ExcelDataWriter extends \yii\base\Object
             } else {
                 $label = $value;
             }
+            $urlValid = (filter_var($value, FILTER_VALIDATE_URL) !== false);
+            if (!$urlValid) {
+                $label = '';
+            }
             $this->sheet->setCellValueByColumnAndRow($column, $row, $label);
-            if (filter_var($value, FILTER_VALIDATE_URL) !== false) {
+            if ($urlValid) {
                 $this->sheet->getCellByColumnAndRow($column, $row)->getHyperlink()->setUrl($value);
             }
         } else {
