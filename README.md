@@ -1,7 +1,7 @@
 PHPExcel extension for Yii2
 =============
 
-%poser.pugx_images_here%
+[![Latest Stable Version](https://poser.pugx.org/alexgx/yii2-phpexcel/v/stable.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![Total Downloads](https://poser.pugx.org/alexgx/yii2-phpexcel/downloads.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![Latest Unstable Version](https://poser.pugx.org/alexgx/yii2-phpexcel/v/unstable.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![License](https://poser.pugx.org/alexgx/yii2-phpexcel/license.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel)
 
 %short_description%
 
