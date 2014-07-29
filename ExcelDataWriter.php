@@ -36,12 +36,9 @@ class ExcelDataWriter extends \yii\base\Object
      */
     protected $j;
 
-    public function init()
-    {
-        // TODO: throw init exceptions if needed
-        parent::init();
-    }
-
+    /**
+     *
+     */
     public function write()
     {
         if (!is_array($this->data) || !is_array($this->columns)) {
@@ -102,7 +99,30 @@ class ExcelDataWriter extends \yii\base\Object
 
     protected function writeFooterRow()
     {
-        // TODO: implement
+        $i = 0;
+        foreach ($this->columns as $column) {
+            // footer config
+            $config = [];
+            if (isset($column['footerStyles'])) {
+                $config['styles'] = $column['footerStyles'];
+            }
+            if (isset($column['footerType'])) {
+                $config['type'] = $column['footerType'];
+            }
+            if (isset($column['footerLabel'])) {
+                $config['label'] = $column['footerLabel'];
+            }
+            if (isset($column['footerOptions']) && $column['footerOptions'] instanceof \Closure) {
+                $config = ArrayHelper::merge($config, call_user_func($column['footerOptions'], null, null, $i, $this->j));
+            }
+            $value = null;
+            if (isset($column['footer'])) {
+                $value = ($column['footer'] instanceof \Closure) ? call_user_func($column['footer'], null, null) : $column['footer'];
+            }
+            $this->writeCell($value, $i, $this->j, $config);
+            ++$i;
+        }
+        ++$this->j;
     }
 
     protected function writeCell($value, $column, $row, $config)
