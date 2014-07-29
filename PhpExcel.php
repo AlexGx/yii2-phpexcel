@@ -86,6 +86,7 @@ class PhpExcel extends \yii\base\Object
      */
     protected function resolveFormat($filename)
     {
+        // see IOFactory::createReaderForFile etc.
         $list = [
             'ods' => 'OpenDocument',
             'xls' => 'Excel5',
