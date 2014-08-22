@@ -61,6 +61,16 @@ class PhpExcel extends \yii\base\Object
         return $sheet;
     }
 
+    public function writeTemplateData(/* TODO */)
+    {
+        // TODO: implement
+    }
+
+    public function readSheetData($sheet, $config)
+    {
+        // TODO: implement
+    }
+
     /**
      *
      * @param $format

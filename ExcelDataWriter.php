@@ -141,6 +141,7 @@ class ExcelDataWriter extends \yii\base\Object
         } elseif ($config['type'] === 'url') {
             if (isset($config['label'])) {
                 if ($config['label'] instanceof \Closure) {
+                    // NOTE: calculate label on top level
                     $label = call_user_func($config['label']/*, TODO */);
                 } else {
                     $label = $config['label'];
