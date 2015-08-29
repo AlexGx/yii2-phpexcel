@@ -1,5 +1,5 @@
 {
-	"name": "alexgx/yii2-phpexcel",
+	"name": "dsidorenko/yii2-phpexcel",
 	"description": "PhpExcel component extension for Yii2.",
 	"keywords": ["yii", "extension", "component", "PhpExcel"],
 	"type": "yii2-extension",
@@ -17,7 +17,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"alexgx\\phpexcel\\": ""
+			"dsidorenko\\phpexcel\\": ""
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace alexgx\phpexcel;
+namespace dsidorenko\phpexcel;
 
 use yii\helpers\ArrayHelper;
 
