@@ -21,6 +21,14 @@ class PhpExcel extends \yii\base\Object
         return new \PHPExcel();
     }
 
+	/**
+	 * Creates new Worksheet Drawing
+	 * @return \PHPExcel_Worksheet_Drawing
+	 */
+	public function getObjDrawing() {
+		return new \PHPExcel_Worksheet_Drawing();
+	}
+
     /**
      * @param string $filename name of the spreadsheet file
      * @return \PHPExcel
