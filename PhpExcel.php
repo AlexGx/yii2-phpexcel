@@ -1,6 +1,6 @@
 <?php
 
-namespace dsidorenko\phpexcel;
+namespace alexgx\phpexcel;
 
 /**
  * Class PhpExcel
