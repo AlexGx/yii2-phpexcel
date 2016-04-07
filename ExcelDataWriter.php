@@ -36,12 +36,9 @@ class ExcelDataWriter extends \yii\base\Object
      */
     protected $j;
 
-    public function init()
-    {
-        // TODO: throw init exceptions if needed
-        parent::init();
-    }
-
+    /**
+     *
+     */
     public function write()
     {
         if (!is_array($this->data) || !is_array($this->columns)) {
@@ -88,8 +85,8 @@ class ExcelDataWriter extends \yii\base\Object
                     $column = ArrayHelper::merge($column, call_user_func($column['cellOptions'], $row, $key, $i, $this->j));
                 }
                 $value = null;
-                if (isset($column['value']) && $column['value'] instanceof \Closure) {
-                    $value = call_user_func($column['value'], $row, $key);
+                if (isset($column['value'])) {
+                    $value = ($column['value'] instanceof \Closure) ? call_user_func($column['value'], $row, $key) : $column['value'];
                 } elseif (isset($column['attribute']) && isset($row[$column['attribute']])) {
                     $value = $row[$column['attribute']];
                 }
@@ -102,7 +99,30 @@ class ExcelDataWriter extends \yii\base\Object
 
     protected function writeFooterRow()
     {
-        // TODO: implement
+        $i = 0;
+        foreach ($this->columns as $column) {
+            // footer config
+            $config = [];
+            if (isset($column['footerStyles'])) {
+                $config['styles'] = $column['footerStyles'];
+            }
+            if (isset($column['footerType'])) {
+                $config['type'] = $column['footerType'];
+            }
+            if (isset($column['footerLabel'])) {
+                $config['label'] = $column['footerLabel'];
+            }
+            if (isset($column['footerOptions']) && $column['footerOptions'] instanceof \Closure) {
+                $config = ArrayHelper::merge($config, call_user_func($column['footerOptions'], null, null, $i, $this->j));
+            }
+            $value = null;
+            if (isset($column['footer'])) {
+                $value = ($column['footer'] instanceof \Closure) ? call_user_func($column['footer'], null, null) : $column['footer'];
+            }
+            $this->writeCell($value, $i, $this->j, $config);
+            ++$i;
+        }
+        ++$this->j;
     }
 
     protected function writeCell($value, $column, $row, $config)
@@ -121,6 +141,7 @@ class ExcelDataWriter extends \yii\base\Object
         } elseif ($config['type'] === 'url') {
             if (isset($config['label'])) {
                 if ($config['label'] instanceof \Closure) {
+                    // NOTE: calculate label on top level
                     $label = call_user_func($config['label']/*, TODO */);
                 } else {
                     $label = $config['label'];
@@ -128,8 +149,12 @@ class ExcelDataWriter extends \yii\base\Object
             } else {
                 $label = $value;
             }
+            $urlValid = (filter_var($value, FILTER_VALIDATE_URL) !== false);
+            if (!$urlValid) {
+                $label = '';
+            }
             $this->sheet->setCellValueByColumnAndRow($column, $row, $label);
-            if (filter_var($value, FILTER_VALIDATE_URL) !== false) {
+            if ($urlValid) {
                 $this->sheet->getCellByColumnAndRow($column, $row)->getHyperlink()->setUrl($value);
             }
         } else {

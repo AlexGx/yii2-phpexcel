@@ -21,6 +21,14 @@ class PhpExcel extends \yii\base\Object
         return new \PHPExcel();
     }
 
+	/**
+	 * Creates new Worksheet Drawing
+	 * @return \PHPExcel_Worksheet_Drawing
+	 */
+	public function getObjDrawing() {
+		return new \PHPExcel_Worksheet_Drawing();
+	}
+
     /**
      * @param string $filename name of the spreadsheet file
      * @return \PHPExcel
@@ -31,8 +39,6 @@ class PhpExcel extends \yii\base\Object
     }
 
     /**
-     *
-     * NOTE: enchasement, resolve name on file extension
      * @param \PHPExcel $object
      * @param string $name attachment name
      * @param string $format output format
@@ -50,14 +56,27 @@ class PhpExcel extends \yii\base\Object
         \Yii::$app->end();
     }
 
-    public function writeData($config)
+    /**
+     * @param $sheet
+     * @param $config
+     */
+    public function writeSheetData($sheet, $data, $config)
     {
-        $object = $this->create();
-        $sheet = $object->getActiveSheet();
         $config['sheet'] = &$sheet;
+        $config['data'] = $data;
         $writer = new ExcelDataWriter($config);
         $writer->write();
-        return $object;
+        return $sheet;
+    }
+
+    public function writeTemplateData(/* TODO */)
+    {
+        // TODO: implement
+    }
+
+    public function readSheetData($sheet, $config)
+    {
+        // TODO: implement
     }
 
     /**
@@ -67,8 +86,10 @@ class PhpExcel extends \yii\base\Object
      */
     protected function resolveMime($format)
     {
-        // TODO: add additional types (formats)
         $list = [
+            'CSV' => 'text/csv',
+            'HTML' => 'text/html',
+            'PDF' => 'application/pdf',
             'OpenDocument' => 'application/vnd.oasis.opendocument.spreadsheet',
             'Excel5' => 'application/vnd.ms-excel',
             'Excel2007' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -83,10 +104,14 @@ class PhpExcel extends \yii\base\Object
      */
     protected function resolveFormat($filename)
     {
+        // see IOFactory::createReaderForFile etc.
         $list = [
             'ods' => 'OpenDocument',
             'xls' => 'Excel5',
             'xlsx' => 'Excel2007',
+            'csv' => 'CSV',
+            'pdf' => 'PDF',
+            'html' => 'HTML',
         ];
         // TODO: check strtolower
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
