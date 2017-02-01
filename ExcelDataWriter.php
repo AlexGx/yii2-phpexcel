@@ -131,9 +131,7 @@ class ExcelDataWriter extends \yii\base\Object
         if (!isset($config['type']) || $config['type'] === null) {
             $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
         } elseif ($config['type'] === 'date') {
-            if (!is_int($value)) {
-                $timestamp = strtotime($value);
-            }
+            $timestamp = !is_int($value) ? strtotime($value) : $value;
             $this->sheet->SetCellValueByColumnAndRow($column, $row, \PHPExcel_Shared_Date::PHPToExcel($timestamp));
             if (!isset($config['styles']['numberformat']['code'])) {
                 $config['styles']['numberformat']['code'] = $this->defaultDateFormat;
