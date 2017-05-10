@@ -32,13 +32,10 @@ class ExcelDataWriter extends \yii\base\Object
     public $defaultDateFormat = \PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY;
 
     /**
-     * @var
+     * @var int Default value is `1`
      */
-    protected $j;
+    protected $j = 1;
 
-    /**
-     *
-     */
     public function write()
     {
         if (!is_array($this->data) || !is_array($this->columns)) {
@@ -161,5 +158,13 @@ class ExcelDataWriter extends \yii\base\Object
         if (isset($config['styles'])) {
             $this->sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($config['styles']);
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getJ()
+    {
+        return $this->j;
     }
 }
