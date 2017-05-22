@@ -34,7 +34,7 @@ class ExcelDataWriter extends \yii\base\Object
     /**
      * @var int Start row Default value is `1`
      */
-    protected $j = 11;
+    protected $j = 1;
 
     /**
      * @var int start column
