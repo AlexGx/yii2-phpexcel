@@ -111,9 +111,7 @@ class ExcelDataWriter extends \yii\base\Object
                 $this->writeCell($value, $i, $this->j, $column);
                 ++$i;
             }
-            if($this->j >100) {
-              //  return;
-            }
+
             ++$this->j;
         }
     }
