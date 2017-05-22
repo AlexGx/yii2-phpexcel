@@ -32,9 +32,28 @@ class ExcelDataWriter extends \yii\base\Object
     public $defaultDateFormat = \PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY;
 
     /**
-     * @var int Default value is `1`
+     * @var int Start row Default value is `1`
      */
-    protected $j = 1;
+    protected $j = 11;
+
+    /**
+     * @var int start column
+     */
+    protected  $startColumn = 0;
+
+    /**
+     * @param int $startRow
+     */
+    public function setStartRow($startRow){
+        $this->j = $startRow;
+    }
+
+    /**
+     * @param int $startColumn
+     */
+    public function setStartColumn($startColumn){
+        $this->startColumn = $startColumn;
+    }
 
     public function write()
     {
@@ -42,7 +61,7 @@ class ExcelDataWriter extends \yii\base\Object
             return;
         }
 
-        $this->j = 1;
+        //$this->j = 1;
 
         $this->writeHeaderRow();
         $this->writeDataRows();
@@ -51,7 +70,7 @@ class ExcelDataWriter extends \yii\base\Object
 
     protected function writeHeaderRow()
     {
-        $i = 0;
+        $i = $this->startColumn;
         foreach ($this->columns as $column) {
             if (isset($column['header'])) {
                 $this->sheet->setCellValueByColumnAndRow($i, $this->j, $column['header']);
@@ -70,7 +89,7 @@ class ExcelDataWriter extends \yii\base\Object
     protected function writeDataRows()
     {
         foreach ($this->data as $key => $row) {
-            $i = 0;
+            $i = $this->startColumn;
             if (isset($this->options['rowOptions']) && $this->options['rowOptions'] instanceof \Closure) {
                 $rowOptions = call_user_func($this->options['rowOptions'], $row, $key);
             }
@@ -87,8 +106,13 @@ class ExcelDataWriter extends \yii\base\Object
                 } elseif (isset($column['attribute']) && isset($row[$column['attribute']])) {
                     $value = $row[$column['attribute']];
                 }
+
+               // dump($column['attribute']);
                 $this->writeCell($value, $i, $this->j, $column);
                 ++$i;
+            }
+            if($this->j >100) {
+              //  return;
             }
             ++$this->j;
         }
@@ -96,7 +120,7 @@ class ExcelDataWriter extends \yii\base\Object
 
     protected function writeFooterRow()
     {
-        $i = 0;
+        $i = $this->startColumn;
         foreach ($this->columns as $column) {
             // footer config
             $config = [];
