@@ -61,7 +61,7 @@ class ExcelDataWriter extends \yii\base\Object
             return;
         }
 
-        //$this->j = 1;
+        $this->j = 1;
 
         $this->writeHeaderRow();
         $this->writeDataRows();
