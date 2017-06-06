@@ -37,15 +37,48 @@ class ExcelDataWriter extends \yii\base\Object
     protected $j = 1;
 
     /**
+     * @var int
+     */
+    protected $startRow = 1;
+
+    /**
      * @var int start column
      */
     protected  $startColumn = 0;
+
+    /**
+     * @var int
+     */
+    protected  $endColumn = 0;
+
+    /**
+     * @var bool
+     */
+    protected $freezeHeader = false;
+
+    /**
+     * @var bool
+     */
+    protected $autoFilter = false;
+
+
+
+    /**
+     * @param bool $freezeHeader
+     */
+    public function setFreezeHeader($freezeHeader)
+    {
+        $this->freezeHeader = $freezeHeader;
+    }
+
+
 
     /**
      * @param int $startRow
      */
     public function setStartRow($startRow){
         $this->j = $startRow;
+        $this->startRow = $startRow;
     }
 
     /**
@@ -54,6 +87,8 @@ class ExcelDataWriter extends \yii\base\Object
     public function setStartColumn($startColumn){
         $this->startColumn = $startColumn;
     }
+
+
 
     public function write()
     {
@@ -68,15 +103,22 @@ class ExcelDataWriter extends \yii\base\Object
 
     protected function writeHeaderRow()
     {
+
+        if($this->freezeHeader){
+            $startColumnAsString = \PHPExcel_Cell::stringFromColumnIndex($this->startColumn);
+            $this->sheet->freezePane($startColumnAsString . ($this->j+1));
+        }
         $i = $this->startColumn;
         foreach ($this->columns as $column) {
+            $this->endColumn = $i + 1;
             if (isset($column['header'])) {
                 $this->sheet->setCellValueByColumnAndRow($i, $this->j, $column['header']);
             }
             if (isset($column['headerStyles'])) {
                 $this->sheet->getStyleByColumnAndRow($i, $this->j)->applyFromArray($column['headerStyles']);
             }
-            if (isset($column['width'])) {
+
+            if (isset($column['width']) && $column['width'] != 'autosize') {
                 $this->sheet->getColumnDimensionByColumn($i)->setWidth($column['width']);
             }
             ++$i;
@@ -118,6 +160,9 @@ class ExcelDataWriter extends \yii\base\Object
     {
         $i = $this->startColumn;
         foreach ($this->columns as $column) {
+            if (isset($column['width']) && $column['width'] == 'autosize') {
+                $this->sheet->getColumnDimensionByColumn($this->j)->setAutoSize(true);
+            }
             // footer config
             $config = [];
             if (isset($column['footerStyles'])) {
@@ -137,8 +182,11 @@ class ExcelDataWriter extends \yii\base\Object
                 $value = ($column['footer'] instanceof \Closure) ? call_user_func($column['footer'], null, null) : $column['footer'];
             }
             $this->writeCell($value, $i, $this->j, $config);
+
+
             ++$i;
         }
+
         ++$this->j;
     }
 
