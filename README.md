@@ -1,4 +1,4 @@
-PHPExcel extension for Yii2
+PhpSpreadsheet extension for Yii2
 =============
 
 [![Latest Stable Version](https://poser.pugx.org/alexgx/yii2-phpexcel/v/stable.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![Total Downloads](https://poser.pugx.org/alexgx/yii2-phpexcel/downloads.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![Latest Unstable Version](https://poser.pugx.org/alexgx/yii2-phpexcel/v/unstable.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel) [![License](https://poser.pugx.org/alexgx/yii2-phpexcel/license.svg)](https://packagist.org/packages/alexgx/yii2-phpexcel)
@@ -100,4 +100,4 @@ TBD
 
 Further Information
 -------------------
-Please, check the [PHPOffice/PHPExcel github repo](https://github.com/PHPOffice/PHPExcel) documentation for further information about its configuration options.
+Please, check the [PHPOffice/PhpSpreadsheet github repo](https://github.com/PHPOffice/phpspreadsheet) documentation for further information about its configuration options.

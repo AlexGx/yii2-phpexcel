@@ -14,43 +14,43 @@ class PhpExcel extends \yii\base\Object
 
     /**
      * Creates new workbook
-     * @return \PHPExcel
+     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
      */
     public function create()
     {
-        return new \PHPExcel();
+        return new \PhpOffice\PhpSpreadsheet\Spreadsheet();
     }
 
 	/**
 	 * Creates new Worksheet Drawing
-	 * @return \PHPExcel_Worksheet_Drawing
+	 * @return \PhpOffice\PhpSpreadsheet\Worksheet\Drawing
 	 */
 	public function getObjDrawing() {
-		return new \PHPExcel_Worksheet_Drawing();
+		return new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
 	}
 
     /**
      * @param string $filename name of the spreadsheet file
-     * @return \PHPExcel
+     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
      */
     public function load($filename)
     {
-        return \PHPExcel_IOFactory::load($filename);
+        return \PhpOffice\PhpSpreadsheet\IOFactory::load($filename);
     }
 
     /**
-     * @param \PHPExcel $object
+     * @param \PhpOffice\PhpSpreadsheet\Spreadsheet $object
      * @param string $name attachment name
      * @param string $format output format
      */
-    public function responseFile(\PHPExcel $object, $filename, $format = null, $beautifyFileName = true)
+    public function responseFile(\PhpOffice\PhpSpreadsheet\Spreadsheet $object, $filename, $format = null, $beautifyFileName = true)
     {
         if ($format === null) {
             $format = $this->resolveFormat($filename);
         }
 
         $filename = $this->filterFilename($filename, $beautifyFileName);
-        $writer = \PHPExcel_IOFactory::createWriter($object, $format);
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($object, $format);
         ob_start();
         $writer->save('php://output');
         $content = ob_get_clean();

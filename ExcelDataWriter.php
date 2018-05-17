@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 class ExcelDataWriter extends \yii\base\Object
 {
     /**
-     * @var \PHPExcel_Worksheet
+     * @var \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
      */
     public $sheet;
 
@@ -29,7 +29,7 @@ class ExcelDataWriter extends \yii\base\Object
     /**
      * @var string
      */
-    public $defaultDateFormat = \PHPExcel_Style_NumberFormat::FORMAT_DATE_DDMMYYYY;
+    public $defaultDateFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY;
 
     /**
      * @var int Start row Default value is `1`
@@ -105,7 +105,7 @@ class ExcelDataWriter extends \yii\base\Object
     {
 
         if($this->freezeHeader){
-            $startColumnAsString = \PHPExcel_Cell::stringFromColumnIndex($this->startColumn);
+            $startColumnAsString = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($this->startColumn);
             $this->sheet->freezePane($startColumnAsString . ($this->j+1));
         }
         $i = $this->startColumn;
@@ -197,7 +197,7 @@ class ExcelDataWriter extends \yii\base\Object
             $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
         } elseif ($config['type'] === 'date') {
             $timestamp = !is_int($value) ? strtotime($value) : $value;
-            $this->sheet->SetCellValueByColumnAndRow($column, $row, \PHPExcel_Shared_Date::PHPToExcel($timestamp));
+            $this->sheet->SetCellValueByColumnAndRow($column, $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($timestamp));
             if (!isset($config['styles']['numberformat']['code'])) {
                 $config['styles']['numberformat']['code'] = $this->defaultDateFormat;
             }
