@@ -44,12 +44,12 @@ class ExcelDataWriter extends \yii\base\Object
     /**
      * @var int start column
      */
-    protected  $startColumn = 0;
+    protected  $startColumn = 1;
 
     /**
      * @var int
      */
-    protected  $endColumn = 0;
+    protected  $endColumn = 1;
 
     /**
      * @var bool

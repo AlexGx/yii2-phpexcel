@@ -108,12 +108,12 @@ class PhpExcel extends \yii\base\Object
     {
         // see IOFactory::createReaderForFile etc.
         $list = [
-            'ods' => 'OpenDocument',
-            'xls' => 'Excel5',
-            'xlsx' => 'Excel2007',
-            'csv' => 'CSV',
-            'pdf' => 'PDF',
-            'html' => 'HTML',
+            'ods' => 'Ods',
+            'xls' => 'Xls',
+            'xlsx' => 'Xlsx',
+            'csv' => 'Csv',
+            'pdf' => 'Pdf',
+            'html' => 'Html',
         ];
         // TODO: check strtolower
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
