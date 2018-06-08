@@ -5,7 +5,7 @@ namespace alexgx\phpexcel;
 /**
  * Class PhpExcel
  */
-class PhpExcel extends \yii\base\Object
+class PhpExcel extends \yii\base\BaseObject
 {
     /**
      * @var string

@@ -4,7 +4,7 @@ namespace alexgx\phpexcel;
 
 use yii\helpers\ArrayHelper;
 
-class ExcelDataWriter extends \yii\base\Object
+class ExcelDataWriter extends \yii\base\BaseObject
 {
     /**
      * @var \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
