@@ -3,6 +3,7 @@
 namespace alexgx\phpexcel;
 
 use yii\helpers\ArrayHelper;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class ExcelDataWriter extends \yii\base\BaseObject
 {
@@ -118,7 +119,7 @@ class ExcelDataWriter extends \yii\base\BaseObject
                 $this->sheet->getStyleByColumnAndRow($i, $this->j)->applyFromArray($column['headerStyles']);
             }
 
-            if (isset($column['width']) && $column['width'] != 'autosize') {
+            if (isset($column['width']) && $column['width'] !== 'autosize') {
                 $this->sheet->getColumnDimensionByColumn($i)->setWidth($column['width']);
             }
             ++$i;
@@ -147,7 +148,6 @@ class ExcelDataWriter extends \yii\base\BaseObject
                     $value = $row[$column['attribute']];
                 }
 
-               // dump($column['attribute']);
                 $this->writeCell($value, $i, $this->j, $column);
                 ++$i;
             }
@@ -160,7 +160,7 @@ class ExcelDataWriter extends \yii\base\BaseObject
     {
         $i = $this->startColumn;
         foreach ($this->columns as $column) {
-            if (isset($column['width']) && $column['width'] == 'autosize') {
+            if (isset($column['width']) && $column['width'] === 'autosize') {
                 $this->sheet->getColumnDimensionByColumn($this->j)->setAutoSize(true);
             }
             // footer config
@@ -197,10 +197,22 @@ class ExcelDataWriter extends \yii\base\BaseObject
             $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
         } elseif ($config['type'] === 'date') {
             $timestamp = !is_int($value) ? strtotime($value) : $value;
-            $this->sheet->SetCellValueByColumnAndRow($column, $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($timestamp));
+            $this->sheet
+                ->getStyleByColumnAndRow($column, $row)
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_DATE_DATETIME);
+
+
+            $this->sheet->setCellValueByColumnAndRow($column, $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($timestamp));
             if (!isset($config['styles']['numberformat']['code'])) {
                 $config['styles']['numberformat']['code'] = $this->defaultDateFormat;
             }
+
+            $this->sheet
+                ->getStyleByColumnAndRow($column, $row)
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_DATE_DDMMYYYY);
+
         } elseif ($config['type'] === 'url') {
             if (isset($config['label'])) {
                 if ($config['label'] instanceof \Closure) {
@@ -216,16 +228,32 @@ class ExcelDataWriter extends \yii\base\BaseObject
             if (!$urlValid) {
                 $label = '';
             }
+
             $this->sheet->setCellValueByColumnAndRow($column, $row, $label);
+
             if ($urlValid) {
                 $this->sheet->getCellByColumnAndRow($column, $row)->getHyperlink()->setUrl($value);
             }
         } else {
             $this->sheet->setCellValueExplicitByColumnAndRow($column, $row, $value, $config['type']);
         }
+
         if (isset($config['styles'])) {
             $this->sheet->getStyleByColumnAndRow($column, $row)->applyFromArray($config['styles']);
         }
+
+        if (isset($config['format']['decimal'])) {
+            if($config['format']['decimal'] === 0){
+                $numberFormat = NumberFormat::FORMAT_NUMBER;
+            }else{
+                $numberFormat = '0.' . str_repeat('0',$config['format']['decimal']);
+            }
+            $this->sheet
+                ->getStyleByColumnAndRow($column, $row)
+                ->getNumberFormat()
+                ->setFormatCode($numberFormat);
+        }
+
     }
 
     /**
