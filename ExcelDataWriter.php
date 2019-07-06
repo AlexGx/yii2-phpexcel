@@ -2,13 +2,20 @@
 
 namespace alexgx\phpexcel;
 
+use Closure;
+use DateTime;
+use DateTimeZone;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ExcelDataWriter extends \yii\base\BaseObject
+class ExcelDataWriter extends BaseObject
 {
     /**
-     * @var \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
+     * @var Worksheet
      */
     public $sheet;
 
@@ -30,7 +37,7 @@ class ExcelDataWriter extends \yii\base\BaseObject
     /**
      * @var string
      */
-    public $defaultDateFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY;
+    public $defaultDateFormat = NumberFormat::FORMAT_DATE_DDMMYYYY;
 
     /**
      * @var int Start row Default value is `1`
@@ -106,7 +113,7 @@ class ExcelDataWriter extends \yii\base\BaseObject
     {
 
         if($this->freezeHeader){
-            $startColumnAsString = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($this->startColumn);
+            $startColumnAsString = Coordinate::stringFromColumnIndex($this->startColumn);
             $this->sheet->freezePane($startColumnAsString . ($this->j+1));
         }
         $i = $this->startColumn;
@@ -131,19 +138,19 @@ class ExcelDataWriter extends \yii\base\BaseObject
     {
         foreach ($this->data as $key => $row) {
             $i = $this->startColumn;
-            if (isset($this->options['rowOptions']) && $this->options['rowOptions'] instanceof \Closure) {
+            if (isset($this->options['rowOptions']) && $this->options['rowOptions'] instanceof Closure) {
                 $rowOptions = call_user_func($this->options['rowOptions'], $row, $key);
             }
             foreach ($this->columns as $column) {
                 if (isset($rowOptions)) {
                     $column = ArrayHelper::merge($column, $rowOptions);
                 }
-                if (isset($column['cellOptions']) && $column['cellOptions'] instanceof \Closure) {
+                if (isset($column['cellOptions']) && $column['cellOptions'] instanceof Closure) {
                     $column = ArrayHelper::merge($column, call_user_func($column['cellOptions'], $row, $key, $i, $this->j));
                 }
                 $value = null;
                 if (isset($column['value'])) {
-                    $value = ($column['value'] instanceof \Closure) ? call_user_func($column['value'], $row, $key) : $column['value'];
+                    $value = ($column['value'] instanceof Closure) ? call_user_func($column['value'], $row, $key) : $column['value'];
                 } elseif (isset($column['attribute']) && isset($row[$column['attribute']])) {
                     $value = $row[$column['attribute']];
                 }
@@ -174,12 +181,12 @@ class ExcelDataWriter extends \yii\base\BaseObject
             if (isset($column['footerLabel'])) {
                 $config['label'] = $column['footerLabel'];
             }
-            if (isset($column['footerOptions']) && $column['footerOptions'] instanceof \Closure) {
+            if (isset($column['footerOptions']) && $column['footerOptions'] instanceof Closure) {
                 $config = ArrayHelper::merge($config, call_user_func($column['footerOptions'], null, null, $i, $this->j));
             }
             $value = null;
             if (isset($column['footer'])) {
-                $value = ($column['footer'] instanceof \Closure) ? call_user_func($column['footer'], null, null) : $column['footer'];
+                $value = ($column['footer'] instanceof Closure) ? call_user_func($column['footer'], null, null) : $column['footer'];
             }
             $this->writeCell($value, $i, $this->j, $config);
 
@@ -196,14 +203,35 @@ class ExcelDataWriter extends \yii\base\BaseObject
         if (!isset($config['type']) || $config['type'] === null) {
             $this->sheet->setCellValueByColumnAndRow($column, $row, $value);
         } elseif ($config['type'] === 'date') {
-            $timestamp = !is_int($value) ? strtotime($value) : $value;
+            $timestamp = false;
+            if(is_int($value)){
+                $timestamp = $value;
+            }
+            $gmt = new DateTimeZone('GMT');
+            if(!$timestamp){
+                //, new \DateTimeZone('Europe/London')
+                if($dt = DateTime::createFromFormat('Y-m-d H:i:s',$value, $gmt)){
+                    $dt->setTimeZone($gmt);
+                    $timestamp = $dt->getTimestamp();
+                }
+            }
+            if(!$timestamp){
+                if($dt = DateTime::createFromFormat('Y-m-d',$value,$gmt)){
+                    $dt->setTimeZone($gmt);
+                    $timestamp = $dt->getTimestamp();
+                }
+            }
+            if(!$timestamp){
+                $timestamp = strtotime($value);
+            }
+
             $this->sheet
                 ->getStyleByColumnAndRow($column, $row)
                 ->getNumberFormat()
                 ->setFormatCode(NumberFormat::FORMAT_DATE_DATETIME);
 
 
-            $this->sheet->setCellValueByColumnAndRow($column, $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($timestamp));
+            $this->sheet->setCellValueByColumnAndRow($column, $row, Date::PHPToExcel($timestamp));
             if (!isset($config['styles']['numberformat']['code'])) {
                 $config['styles']['numberformat']['code'] = $this->defaultDateFormat;
             }
@@ -215,7 +243,7 @@ class ExcelDataWriter extends \yii\base\BaseObject
 
         } elseif ($config['type'] === 'url') {
             if (isset($config['label'])) {
-                if ($config['label'] instanceof \Closure) {
+                if ($config['label'] instanceof Closure) {
                     // NOTE: calculate label on top level
                     $label = call_user_func($config['label']/*, TODO */);
                 } else {
