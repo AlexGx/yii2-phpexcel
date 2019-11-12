@@ -2,7 +2,7 @@
 
 namespace alexgx\phpexcel;
 
-class ExcelDataReader extends \yii\base\Object
+class ExcelDataReader extends \yii\base\BaseObject
 {
     // TODO: implement excel to yii model reader
     // - key (pk) param
