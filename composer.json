@@ -13,7 +13,7 @@
 	],
 	"require": {
 		"yiisoft/yii2": "*",
-		"phpoffice/phpspreadsheet": "dev-master"
+		"phpoffice/phpspreadsheet": "*"
 	},
 	"autoload": {
 		"psr-4": {
